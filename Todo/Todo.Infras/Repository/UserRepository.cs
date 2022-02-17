@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Todo.Domains.Entities;
 using Todo.Domains.Repository;
 
@@ -26,9 +27,9 @@ namespace Todo.Infras.Repository
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<User>> GetAllUsersAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<User>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _todoContext.Users.ToListAsync(cancellationToken);
         }
 
         public Task<User> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)

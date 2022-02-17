@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Todo.Api.Configs;
+using Todo.AppServices;
 using Todo.Infras;
 
 namespace Todo.Api
@@ -38,6 +39,9 @@ namespace Todo.Api
 
             services.AddInfras(Configuration.GetValue<string>("DefaultConnection"));
             services.Configure<MembershipConfigs>(Configuration.GetSection("Membership"));
+
+            services.AddServices();
+            services.AddAutoMapperConfig();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

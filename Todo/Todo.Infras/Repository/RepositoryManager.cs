@@ -3,7 +3,7 @@ using Todo.Domains.Repository;
 
 namespace Todo.Infras.Repository
 {
-    public class RepositoryManager
+    public class RepositoryManager : IRepositoryManager
     {
         private readonly Lazy<IUnitOfWork> _lazyUnitOrWork;
         private readonly Lazy<IUserRepository> _lazyUserRepository;
