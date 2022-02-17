@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Todo.Api.Configs;
 
 namespace Todo.Api.Controllers
 {
@@ -17,15 +19,19 @@ namespace Todo.Api.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IOptions<MembershipConfigs> _options;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger,
+            IOptions<MembershipConfigs> options)
         {
             _logger = logger;
+            _options = options;
         }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            var test = _options.Value.ToList();
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
