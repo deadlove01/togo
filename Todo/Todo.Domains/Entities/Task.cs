@@ -6,8 +6,9 @@ namespace Todo.Domains.Entities
 {
     public enum TaskStatus
     {
-        Active = 1,
-        Completed = 2
+        Inactive = 1,
+        Active = 2,
+        Completed = 3
     }
     
     public class Task : BaseEntity

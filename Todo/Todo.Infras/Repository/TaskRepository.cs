@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
-using Todo.Domains.Entities;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Todo.Domains.Repository;
+using TodoTask = Todo.Domains.Entities.Task;
 
 namespace Todo.Infras.Repository
 {
@@ -15,19 +18,39 @@ namespace Todo.Infras.Repository
             _context = context;
         }
 
-        public void Add(Task task)
+        public async Task AddAsync(TodoTask task)
+        {
+            await _context.Tasks.AddAsync(task).ConfigureAwait(false);
+        }
+
+        public void Remove(TodoTask task)
         {
             throw new NotImplementedException();
         }
 
-        public void Remove(Task task)
+        public async System.Threading.Tasks.Task<IEnumerable<TodoTask>> GetTasksByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = GetQuery();
+            return await query.Where(x => x.UserId == userId).
+                ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public System.Threading.Tasks.Task<IEnumerable<Task>> GetTasksByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<TodoTask>> GetTasksAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = GetQuery();
+            return await query.ToListAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<TodoTask> GetTaskByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var query = GetQuery();
+            return await query.Where(x => x.Id == id)
+                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        private IQueryable<TodoTask> GetQuery()
+        {
+            return _context.Tasks.AsQueryable();
         }
     }
 }

@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Todo.Api.Configs;
-using Todo.AppServices;
+using Todo.AppServices.Services;
+using Todo.Contracts.User;
 
 namespace Todo.Api.Controllers
 {
@@ -30,6 +31,15 @@ namespace Todo.Api.Controllers
         public async Task<IActionResult> Get(CancellationToken cancellationToke)
         {
             var users = await _serviceManager.UserService.GetAllUsersAsync(cancellationToke);
+            return Ok(users);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> AddUser(
+            [FromBody] CreateUserRequest createUserRequest,
+            CancellationToken cancellationToke)
+        {
+            var users = await _serviceManager.UserService.CreateUserAsync(createUserRequest, cancellationToke);
             return Ok(users);
         }
     }

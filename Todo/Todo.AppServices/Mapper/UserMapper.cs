@@ -9,6 +9,7 @@ namespace Todo.AppServices.Mapper
         public UserMapper()
         {
             CreateMap<User, UserResponse>();
+            CreateMap<CreateUserRequest, User>();
         }
     }
 }

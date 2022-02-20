@@ -1,4 +1,4 @@
-﻿namespace Todo.AppServices
+﻿namespace Todo.AppServices.Services
 {
     public interface IServiceManager
     {

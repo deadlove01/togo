@@ -2,7 +2,7 @@
 using AutoMapper;
 using Todo.Domains.Repository;
 
-namespace Todo.AppServices.Concrete
+namespace Todo.AppServices.Services.Concrete
 {
     public class ServiceManager : IServiceManager
     {
@@ -11,7 +11,7 @@ namespace Todo.AppServices.Concrete
 
         public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper)
         {
-            _lazyTaskService = new Lazy<ITaskService>(() => new TaskService(repositoryManager));
+            _lazyTaskService = new Lazy<ITaskService>(() => new TaskService(repositoryManager, mapper));
             _lazyUserService = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper));
         }
 

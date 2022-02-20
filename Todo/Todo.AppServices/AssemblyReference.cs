@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-using Todo.AppServices.Concrete;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Todo.AppServices.Services;
+using Todo.AppServices.Services.Concrete;
 using Todo.Domains.Repository;
 using Todo.Infras.Repository;
 

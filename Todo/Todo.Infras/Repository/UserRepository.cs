@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Todo.Domains.Entities;
 using Todo.Domains.Repository;
+using Task = System.Threading.Tasks.Task;
 
 namespace Todo.Infras.Repository
 {
@@ -17,29 +20,39 @@ namespace Todo.Infras.Repository
             _todoContext = todoContext;
         }
 
-        public void Add(User user)
+        public async Task AddAsync(User user)
         {
-            throw new NotImplementedException();
+            await _todoContext.Users.AddAsync(user).ConfigureAwait(false);
         }
 
         public void Remove(User user)
         {
-            throw new NotImplementedException();
+            _todoContext.Users.Remove(user);
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
-            return await _todoContext.Users.ToListAsync(cancellationToken);
+            var query = GetQuery();
+            return await query.ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<User> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<User> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = GetQuery();
+            return await query
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<User> GetUserByUsernameAsync(string username, CancellationToken cancellationToken = default)
+        public async Task<User> GetUserByUsernameAsync(string username, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var query = GetQuery();
+            return await query
+                .Where(x => string.Equals(x.Username, username, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         }
+
+        private IQueryable<User> GetQuery()
+            => _todoContext.Users.AsQueryable();
     }
 }
