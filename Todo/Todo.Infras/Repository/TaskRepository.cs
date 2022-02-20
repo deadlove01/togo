@@ -25,7 +25,7 @@ namespace Todo.Infras.Repository
 
         public void Remove(TodoTask task)
         {
-            throw new NotImplementedException();
+            _context.Tasks.Remove(task);
         }
 
         public async System.Threading.Tasks.Task<IEnumerable<TodoTask>> GetTasksByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,6 +10,7 @@ using Todo.Contracts.User;
 
 namespace Todo.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
@@ -41,6 +43,27 @@ namespace Todo.Api.Controllers
         {
             var users = await _serviceManager.UserService.CreateUserAsync(createUserRequest, cancellationToke);
             return Ok(users);
+        }
+        
+        [AllowAnonymous]    
+        [HttpPost]   
+        [Route("login")]
+        public async Task<IActionResult> Login(
+            [FromServices] IAuthService authService,
+            [FromBody] LoginRequest loginRequest,
+            CancellationToken cancellationToken)
+        {
+            IActionResult response = Unauthorized();
+            var user = await _serviceManager.UserService.GetUserByUsernameAsync(loginRequest.Username,
+                loginRequest.Password, cancellationToken);
+    
+            if (user != null)    
+            {    
+                var tokenString = authService.GenerateJWT(loginRequest.Username, loginRequest.Password);     
+                response = Ok(new { token = tokenString });    
+            }    
+    
+            return response; 
         }
     }
 }

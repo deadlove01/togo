@@ -40,7 +40,7 @@ namespace Todo.AppServices.Services.Concrete
             var user = await _repositoryManager.UserRepository.GetUserByIdAsync(createTaskRequest.UserId);
             if (user is null)
             {
-                throw new UserNotFoundException(createTaskRequest.UserId);
+                throw new UserNotFoundException(createTaskRequest.UserId.ToString());
             }
             
             var todoTask = _mapper.Map<TodoTask>(createTaskRequest);
@@ -66,9 +66,16 @@ namespace Todo.AppServices.Services.Concrete
             return todoTaskResponse;
         }
 
-        public Task<bool> RemoveTaskAysnc(CancellationToken cancellationToken = default)
+        public async Task<TaskResponse> RemoveTaskAysnc(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var todoTask =
+                await _repositoryManager.TaskRepository.GetTaskByIdAsync(id, cancellationToken);
+            if (todoTask == null) return null;
+            _repositoryManager.TaskRepository.Remove(todoTask);
+            await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+            
+            var todoTaskResponse = _mapper.Map<TaskResponse>(todoTask);
+            return todoTaskResponse;
         }
     }
 }

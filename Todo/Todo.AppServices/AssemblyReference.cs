@@ -12,6 +12,7 @@ namespace Todo.AppServices
         {
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddScoped<IRepositoryManager, RepositoryManager>();
+            services.AddScoped<IAuthService, AuthService>();
             return services;
         }
     }

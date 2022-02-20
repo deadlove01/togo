@@ -10,5 +10,6 @@ namespace Todo.AppServices.Services
     {
         Task<IEnumerable<UserResponse>> GetAllUsersAsync(CancellationToken cancellationToken = default);
         Task<UserResponse> CreateUserAsync(CreateUserRequest createUserRequest, CancellationToken cancellationToken);
+        Task<UserResponse> GetUserByUsernameAsync(string username, string password, CancellationToken cancellationToken = default);
     }
 }

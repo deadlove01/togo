@@ -20,6 +20,7 @@ namespace Todo.Api.Middlewares
         {
             try
             {
+                
                 await next(context);
             }
             catch (Exception e)
@@ -37,6 +38,7 @@ namespace Todo.Api.Middlewares
             {
                 BadRequestException => StatusCodes.Status400BadRequest,
                 NotFoundException => StatusCodes.Status404NotFound,
+                UnauthorizedException => StatusCodes.Status401Unauthorized,
                 _ => StatusCodes.Status500InternalServerError
             };
 

@@ -48,7 +48,7 @@ namespace Todo.Infras.Repository
         {
             var query = GetQuery();
             return await query
-                .Where(x => string.Equals(x.Username, username, StringComparison.OrdinalIgnoreCase))
+                .Where(x => x.Username == username)
                 .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         }
 

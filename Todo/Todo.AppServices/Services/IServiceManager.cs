@@ -4,5 +4,7 @@
     {
         IUserService UserService { get;}
         ITaskService TaskService { get; }
+        
+        IAuthService AuthService { get; }
     }
 }

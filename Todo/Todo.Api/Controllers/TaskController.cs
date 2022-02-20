@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Todo.AppServices.Services;
 using Todo.Contracts.Task;
+using Todo.Contracts.User;
 
 namespace Todo.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class TaskController : ControllerBase
@@ -55,5 +58,13 @@ namespace Todo.Api.Controllers
             return Ok(newTask);
         }
         
+        [HttpDelete]
+        [Route("{taskId}")]
+        public async Task<IActionResult> DeleteTask(
+            [FromRoute] Guid taskId, CancellationToken cancellationToken)
+        {
+            var newTask = await _serviceManager.TaskService.RemoveTaskAysnc(taskId, cancellationToken);
+            return Ok(newTask);
+        }
     }
 }

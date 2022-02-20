@@ -12,6 +12,6 @@ namespace Todo.AppServices.Services
         Task<IEnumerable<TaskResponse>> GetTasksByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
         Task<TaskResponse> CreateTaskAsync(CreateTaskRequest createTaskRequest, CancellationToken cancellationToken = default);
         Task<TaskResponse> UpdateTaskAsync(Guid id, UpdateTaskRequest updateTaskRequest, CancellationToken cancellationToken = default);
-        Task<bool> RemoveTaskAysnc(CancellationToken cancellationToken = default);
+        Task<TaskResponse> RemoveTaskAysnc(Guid id, CancellationToken cancellationToken = default);
     }
 }
