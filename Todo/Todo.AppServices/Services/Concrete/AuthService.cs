@@ -17,37 +17,25 @@ namespace Todo.AppServices.Services.Concrete
         }
         
         
-        public string GenerateJWT(string username, string password)
+        public string GenerateJWT(Guid userId)
         {
-            var key = _configuration["Jwt:Key"];
+            var secret = _configuration["AppSettings:Secret"];
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("id", userId.ToString()) }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
 
-            // var tokenHandler = new JwtSecurityTokenHandler();
-            // var tokenKey = Encoding.ASCII.GetBytes(key);
-            // var tokenDescriptor = new SecurityTokenDescriptor()
-            // {
-            //     Subject = new ClaimsIdentity(
-            //         new Claim[]
-            //         {
-            //             new Claim(ClaimTypes.Name, username)
-            //         }),
-            //     Expires = DateTime.UtcNow.AddHours(1),
-            //     SigningCredentials = new SigningCredentials(
-            //         new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
-            // };
-            // var token = tokenHandler.CreateToken(tokenDescriptor);
-            // return tokenHandler.WriteToken(token);
+        public bool ValidateToken()
+        {
             
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));    
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var issuer = _configuration["Jwt:Issuer"];
-            var token = new JwtSecurityToken(issuer,    
-                issuer,    
-                null,    
-                expires: DateTime.Now.AddMinutes(120),    
-                signingCredentials: credentials);    
-    
-            return new JwtSecurityTokenHandler().WriteToken(token); 
+            return false;
         }
     }
 }

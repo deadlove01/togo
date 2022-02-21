@@ -1,7 +1,9 @@
-﻿namespace Todo.AppServices.Services
+﻿using System;
+
+namespace Todo.AppServices.Services
 {
     public interface IAuthService
     {
-        string GenerateJWT(string username, string password);
+        string GenerateJWT(Guid userId);
     }
 }

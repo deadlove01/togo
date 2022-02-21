@@ -59,7 +59,7 @@ namespace Todo.Api.Controllers
     
             if (user != null)    
             {    
-                var tokenString = authService.GenerateJWT(loginRequest.Username, loginRequest.Password);     
+                var tokenString = authService.GenerateJWT(user.Id);     
                 response = Ok(new { token = tokenString });    
             }    
     

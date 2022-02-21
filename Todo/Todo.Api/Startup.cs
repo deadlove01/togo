@@ -1,21 +1,15 @@
+using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 using Todo.Api.Configs;
+using Todo.Api.Helpers;
 using Todo.Api.Middlewares;
 using Todo.AppServices;
 using Todo.Infras;
@@ -36,7 +30,8 @@ namespace Todo.Api
         {
 
             services.AddControllers();
-            var key = Configuration["Jwt:Key"];
+            var key = Configuration["AppSettings:Secret"];
+            
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -50,7 +45,8 @@ namespace Todo.Api
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+                    ClockSkew = TimeSpan.Zero
                 };
             });
             
@@ -62,6 +58,7 @@ namespace Todo.Api
 
             services.AddInfras(Configuration.GetValue<string>("DefaultConnection"));
             services.Configure<MembershipConfigs>(Configuration.GetSection("Membership"));
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddServices();
             services.AddAutoMapperConfig();
@@ -77,12 +74,21 @@ namespace Todo.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Todo.Api v1"));
             }
+            
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+    
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -57,5 +57,17 @@ namespace Todo.AppServices.Services.Concrete
             var userResponse = _mapper.Map<UserResponse>(user);
             return userResponse;
         }
+
+        public async Task<UserResponse> GetUserbyIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var user = await _repositoryManager.UserRepository.GetUserByIdAsync(id, cancellationToken);
+            if (user == null)
+            {
+                throw new UserNotFoundException(id.ToString());
+            }
+            
+            var userResponse = _mapper.Map<UserResponse>(user);
+            return userResponse;
+        }
     }
 }
