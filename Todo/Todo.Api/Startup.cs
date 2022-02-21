@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Todo.Api.Configs;
 using Todo.Api.Helpers;
 using Todo.Api.Middlewares;
@@ -57,7 +59,8 @@ namespace Todo.Api
             });
 
 
-            services.AddInfras(Configuration.GetValue<string>("DefaultConnection"));
+            // services.AddInfras(Configuration.GetValue<string>("DefaultConnection"));
+            ConfigureDatabaseServices(services);
             services.Configure<MembershipConfigs>(Configuration.GetSection("Membership"));
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
@@ -65,15 +68,34 @@ namespace Todo.Api
             services.AddAutoMapperConfig();
             services.AddTransient<ExceptionHandlingMiddleware>();
         }
+        
+        protected virtual void ConfigureDatabaseServices(IServiceCollection services)
+        {
+            services.AddDbContext<TodoContext>(options =>
+                options.UseSqlite(
+                    Configuration.GetValue<string>("DefaultConnection"),
+                    builder => builder.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name)
+                ));
+        }
+        
+        public virtual void EnsureDatabaseCreated(TodoContext dbContext)
+        {
+            // run Migrations
+            dbContext.Database.Migrate();
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Todo.Api v1"));
+            }
+            else
+            {
+                app.UseHsts();
             }
             
             // global cors policy
