@@ -17,7 +17,7 @@ namespace Todo.AppServices.Services.Concrete
             IOptions<MembershipConfigs> membershipConfigsOption)
         {
             _lazyTaskService = new Lazy<ITaskService>(() => new TaskService(repositoryManager, mapper,
-                membershipConfigsOption));
+                membershipConfigsOption.Value));
             _lazyUserService = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper));
             _lazyAuthService = new Lazy<IAuthService>(() => new AuthService(configuration));
         }

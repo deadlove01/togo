@@ -20,11 +20,11 @@ namespace Todo.AppServices.Services.Concrete
         private readonly MembershipConfigs _membershipConfigs;
 
         public TaskService(IRepositoryManager repositoryManager, IMapper mapper,
-            IOptions<MembershipConfigs> membershipConfigsOption)
+            MembershipConfigs membershipConfigs)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
-            _membershipConfigs = membershipConfigsOption.Value;
+            _membershipConfigs = membershipConfigs;
         }
 
         public async Task<IEnumerable<TaskResponse>> GetTasksAsync(CancellationToken cancellationToken = default)
