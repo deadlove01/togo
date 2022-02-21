@@ -28,4 +28,12 @@
       <ProjectReference Include="..\Todo.Infras\Todo.Infras.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="appsettings.test.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

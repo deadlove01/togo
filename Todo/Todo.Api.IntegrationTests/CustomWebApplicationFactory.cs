@@ -1,17 +1,32 @@
 ﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Todo.AppServices.Helpers;
 using Todo.Infras;
 
 namespace Todo.Api.IntegrationTests
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Startup>
     {
+        public IOptions<AppSettings> AppSettings;
+        
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            builder.ConfigureAppConfiguration((builderContext, config) =>
+            {
+                var projectDir = Directory.GetCurrentDirectory();
+                var configPath = Path.Combine(projectDir, "appsettings.test.json");
+
+                config.AddJsonFile(configPath);
+                config.AddEnvironmentVariables();
+            });
+            
             builder.ConfigureServices(services =>
             {
                 // Create a new service provider.
@@ -41,6 +56,8 @@ namespace Todo.Api.IntegrationTests
                     // Ensure the database is created.
                     appDb.Database.EnsureDeleted();
                     appDb.Database.EnsureCreated();
+                    
+                    AppSettings = scopedServices.GetRequiredService<IOptions<AppSettings>>();
 
                     try
                     {

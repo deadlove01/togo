@@ -59,29 +59,13 @@ namespace Todo.Api
             });
 
 
-            // services.AddInfras(Configuration.GetValue<string>("DefaultConnection"));
-            ConfigureDatabaseServices(services);
+            services.AddInfras(Configuration.GetValue<string>("DefaultConnection"));
             services.Configure<MembershipConfigs>(Configuration.GetSection("Membership"));
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddServices();
             services.AddAutoMapperConfig();
             services.AddTransient<ExceptionHandlingMiddleware>();
-        }
-        
-        protected virtual void ConfigureDatabaseServices(IServiceCollection services)
-        {
-            services.AddDbContext<TodoContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetValue<string>("DefaultConnection"),
-                    builder => builder.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name)
-                ));
-        }
-        
-        public virtual void EnsureDatabaseCreated(TodoContext dbContext)
-        {
-            // run Migrations
-            dbContext.Database.Migrate();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

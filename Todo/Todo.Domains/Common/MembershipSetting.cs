@@ -6,7 +6,7 @@ namespace Todo.Domains.Common
     {
         public string Title { get; set; }
 
-        public int MaxTaskPerDay { get; set; }
+        public int MaxTasksPerDay { get; set; }
     }
     
     public class MembershipConfigs : List<MembershipSetting>

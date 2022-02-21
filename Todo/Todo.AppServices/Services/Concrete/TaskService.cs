@@ -9,6 +9,7 @@ using Todo.Contracts.Task;
 using Todo.Domains.Common;
 using Todo.Domains.Exceptions;
 using Todo.Domains.Repository;
+using TaskStatus = Todo.Domains.Entities.TaskStatus;
 using TodoTask = Todo.Domains.Entities.Task;
 
 namespace Todo.AppServices.Services.Concrete
@@ -54,14 +55,15 @@ namespace Todo.AppServices.Services.Concrete
             
             var numberOfTasksInDay = await _repositoryManager.TaskRepository.CountTaskByDateAsync(user.Id,
                 DateTimeOffset.Now, cancellationToken);
-            if (limitedTasksInDay != null && numberOfTasksInDay >= limitedTasksInDay.MaxTaskPerDay)
+            if (limitedTasksInDay != null && numberOfTasksInDay >= limitedTasksInDay.MaxTasksPerDay)
             {
-                throw new BadRequestException($"Your account can only create {limitedTasksInDay.MaxTaskPerDay} per day.");
+                throw new BadRequestException($"Your account can only create {limitedTasksInDay.MaxTasksPerDay} per day.");
             }
             
             var todoTask = _mapper.Map<TodoTask>(createTaskRequest);
             todoTask.Id = Guid.NewGuid();
             todoTask.CreatedDate = DateTimeOffset.UtcNow;
+            todoTask.Status = TaskStatus.Inactive;
             await _repositoryManager.TaskRepository.AddAsync(todoTask);
             await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
             
