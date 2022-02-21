@@ -48,6 +48,15 @@ namespace Todo.Infras.Repository
                 .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task<int> CountTaskByDateAsync(Guid userId, DateTimeOffset date, CancellationToken cancellationToken = default)
+        {
+            var query = GetQuery();
+            var count = await query.Where(x => x.UserId == userId && x.CreatedDate == date)
+                .CountAsync(cancellationToken)
+                .ConfigureAwait(false);
+            return count;
+        }
+
         private IQueryable<TodoTask> GetQuery()
         {
             return _context.Tasks.AsQueryable();

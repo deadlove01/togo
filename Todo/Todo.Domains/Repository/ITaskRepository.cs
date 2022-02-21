@@ -14,5 +14,7 @@ namespace Todo.Domains.Repository
         
         Task<IEnumerable<TodoTask>> GetTasksAsync(CancellationToken cancellationToken = default);
         Task<TodoTask> GetTaskByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+        Task<int> CountTaskByDateAsync(Guid userId, DateTimeOffset date, CancellationToken cancellationToken = default);
     }
 }

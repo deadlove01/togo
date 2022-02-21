@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Extensions.Options;
 using Todo.Contracts.Task;
+using Todo.Domains.Common;
 using Todo.Domains.Exceptions;
 using Todo.Domains.Repository;
 using TodoTask = Todo.Domains.Entities.Task;
@@ -14,11 +17,14 @@ namespace Todo.AppServices.Services.Concrete
     {
         private readonly IRepositoryManager _repositoryManager;
         private readonly IMapper _mapper;
+        private readonly MembershipConfigs _membershipConfigs;
 
-        public TaskService(IRepositoryManager repositoryManager, IMapper mapper)
+        public TaskService(IRepositoryManager repositoryManager, IMapper mapper,
+            IOptions<MembershipConfigs> membershipConfigsOption)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
+            _membershipConfigs = membershipConfigsOption.Value;
         }
 
         public async Task<IEnumerable<TaskResponse>> GetTasksAsync(CancellationToken cancellationToken = default)
@@ -41,6 +47,16 @@ namespace Todo.AppServices.Services.Concrete
             if (user is null)
             {
                 throw new UserNotFoundException(createTaskRequest.UserId.ToString());
+            }
+
+            var limitedTasksInDay = _membershipConfigs
+                .FirstOrDefault(x => x.Title == user.Membership.ToString());
+            
+            var numberOfTasksInDay = await _repositoryManager.TaskRepository.CountTaskByDateAsync(user.Id,
+                DateTimeOffset.Now, cancellationToken);
+            if (limitedTasksInDay != null && numberOfTasksInDay >= limitedTasksInDay.MaxTaskPerDay)
+            {
+                throw new BadRequestException($"Your account can only create {limitedTasksInDay.MaxTaskPerDay} per day.");
             }
             
             var todoTask = _mapper.Map<TodoTask>(createTaskRequest);

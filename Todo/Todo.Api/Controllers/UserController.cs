@@ -16,16 +16,11 @@ namespace Todo.Api.Controllers
     public class UserController : ControllerBase
     {
 
-        private readonly ILogger<UserController> _logger;
-        private readonly IOptions<MembershipConfigs> _options;
         private readonly IServiceManager _serviceManager;
 
-        public UserController(ILogger<UserController> logger,
-            IOptions<MembershipConfigs> options,
+        public UserController(
             IServiceManager serviceManager)
         {
-            _logger = logger;
-            _options = options;
             _serviceManager = serviceManager;
         }
 
